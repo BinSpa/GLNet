@@ -9,7 +9,8 @@ import torch
 import torch.nn as nn
 from torchvision import transforms
 from tqdm import tqdm
-from dataset.deep_globe import DeepGlobe, classToRGB, is_image_file
+from dataset import *
+# from dataset.deep_globe import DeepGlobe, classToRGB, is_image_file
 from utils.loss import CrossEntropyLoss2d, SoftCrossEntropyLoss2d, FocalLoss
 from utils.lovasz_losses import lovasz_softmax
 from utils.lr_scheduler import LR_Scheduler
@@ -26,6 +27,7 @@ torch.backends.cudnn.deterministic = True
 
 data_path = args.data_path
 model_path = args.model_path
+dataset = args.dataset
 if not os.path.isdir(model_path): os.mkdir(model_path)
 log_path = args.log_path
 if not os.path.isdir(log_path): os.mkdir(log_path)
@@ -41,19 +43,32 @@ print("mode:", mode, "evaluation:", evaluation, "test:", test)
 
 ###################################
 print("preparing datasets and dataloaders......")
-batch_size = args.batch_size
-ids_train = [image_name for image_name in os.listdir(os.path.join(data_path, "train", "Sat")) if is_image_file(image_name)]
-ids_val = [image_name for image_name in os.listdir(os.path.join(data_path, "crossvali", "Sat")) if is_image_file(image_name)]
-ids_test = [image_name for image_name in os.listdir(os.path.join(data_path, "offical_crossvali", "Sat")) if is_image_file(image_name)]
+if dataset == "deep_globe":
+    batch_size = args.batch_size
+    ids_train = [image_name for image_name in os.listdir(os.path.join(data_path, "train", "Sat")) if is_image_file(image_name)]
+    ids_val = [image_name for image_name in os.listdir(os.path.join(data_path, "crossvali", "Sat")) if is_image_file(image_name)]
+    ids_test = [image_name for image_name in os.listdir(os.path.join(data_path, "offical_crossvali", "Sat")) if is_image_file(image_name)]
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-dataset_train = DeepGlobe(os.path.join(data_path, "train"), ids_train, label=True, transform=True)
-dataloader_train = torch.utils.data.DataLoader(dataset=dataset_train, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=True, pin_memory=True)
-dataset_val = DeepGlobe(os.path.join(data_path, "crossvali"), ids_val, label=True)
-dataloader_val = torch.utils.data.DataLoader(dataset=dataset_val, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=False, pin_memory=True)
-dataset_test = DeepGlobe(os.path.join(data_path, "offical_crossvali"), ids_test, label=False)
-dataloader_test = torch.utils.data.DataLoader(dataset=dataset_test, batch_size=batch_size, num_workers=10, collate_fn=collate_test, shuffle=False, pin_memory=True)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    dataset_train = DeepGlobe(os.path.join(data_path, "train"), ids_train, label=True, transform=True)
+    dataloader_train = torch.utils.data.DataLoader(dataset=dataset_train, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=True, pin_memory=True)
+    dataset_val = DeepGlobe(os.path.join(data_path, "crossvali"), ids_val, label=True)
+    dataloader_val = torch.utils.data.DataLoader(dataset=dataset_val, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=False, pin_memory=True)
+    dataset_test = DeepGlobe(os.path.join(data_path, "offical_crossvali"), ids_test, label=False)
+    dataloader_test = torch.utils.data.DataLoader(dataset=dataset_test, batch_size=batch_size, num_workers=10, collate_fn=collate_test, shuffle=False, pin_memory=True)
+elif dataset == "gid":
+    batch_size = args.batch_size
+    ids_train = [image_name for image_name in os.listdir(os.path.join(data_path, "train", "rgb_images"))]
+    ids_val = [image_name for image_name in os.listdir(os.path.join(data_path, "val", "rgb_images"))]
+    ids_test = ids_val
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    dataset_train = GID(os.path.join(data_path, "train"), ids_train, label=True, transform=True)
+    dataloader_train = torch.utils.data.DataLoader(dataset=dataset_train, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=True, pin_memory=True)
+    dataset_val = GID(os.path.join(data_path, "val"), ids_val, label=True)
+    dataloader_val = torch.utils.data.DataLoader(dataset=dataset_val, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=False, pin_memory=True)
+    dataset_test = GID(os.path.join(data_path, "val"), ids_test, label=True)
+    dataloader_test = torch.utils.data.DataLoader(dataset=dataset_test, batch_size=batch_size, num_workers=10, collate_fn=collate_test, shuffle=False, pin_memory=True)
 ##### sizes are (w, h) ##############################
 # make sure margin / 32 is over 1.5 AND size_g is divisible by 4
 size_g = (args.size_g, args.size_g) # resized global image
@@ -129,12 +144,12 @@ for epoch in range(num_epochs):
                     labels = sample_batched['label'] # PIL images
 
                 if test:
-                    if not os.path.isdir("./prediction/"): os.mkdir("./prediction/")
+                    if not os.path.isdir("../../prediction/gid"): os.mkdir("../../prediction/gid")
                     for i in range(len(images)):
                         if mode == 1:
-                            transforms.functional.to_pil_image(classToRGB(predictions_global[i]) * 255.).save("./prediction/" + sample_batched['id'][i] + "_mask.png")
+                            transforms.functional.to_pil_image(classToRGB(predictions_global[i]) * 255.).save("../../prediction/gid" + sample_batched['id'][i] + "_mask.png")
                         else:
-                            transforms.functional.to_pil_image(classToRGB(predictions[i]) * 255.).save("./prediction/" + sample_batched['id'][i] + "_mask.png")
+                            transforms.functional.to_pil_image(classToRGB(predictions[i]) * 255.).save("../../prediction/gid" + sample_batched['id'][i] + "_mask.png")
 
                 if not evaluation and not test:
                     if i_batch * batch_size + len(images) > (epoch % len(dataloader_val)) and i_batch * batch_size <= (epoch % len(dataloader_val)):
@@ -149,7 +164,7 @@ for epoch in range(num_epochs):
             # torch.cuda.empty_cache()
 
             # if not (test or evaluation): torch.save(model.state_dict(), "./saved_models/" + task_name + ".epoch" + str(epoch) + ".pth")
-            if not (test or evaluation): torch.save(model.state_dict(), "./saved_models/" + task_name + ".pth")
+            if not (test or evaluation): torch.save(model.state_dict(), "../../saved_models/" + task_name + str(epoch) + ".pth")
 
             if test: break
             else:
