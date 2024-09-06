@@ -1,6 +1,6 @@
-export CUDA_VISIBLE_DEVICES=0
+# export CUDA_VISIBLE_DEVICES=0
 python /data1/gyl/RS_Code/GLNet/train_deep_globe.py \
---n_class 6 \
+--n_class 8 \
 --dataset "urur" \
 --data_path "/data1/gyl/RS_DATASET/URUR" \
 --model_path "../../saved_models/urur" \
