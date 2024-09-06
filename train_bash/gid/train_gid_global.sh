@@ -1,5 +1,5 @@
 export CUDA_VISIBLE_DEVICES=0
-python train_deep_globe.py \
+python /data1/gyl/RS_Code/GLNet/train_deep_globe.py \
 --n_class 6 \
 --dataset "gid" \
 --data_path "/data1/gyl/RS_DATASET/FBP" \
