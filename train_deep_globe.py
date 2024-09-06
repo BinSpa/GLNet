@@ -125,7 +125,7 @@ for epoch in range(num_epochs):
     trainer.reset_metrics()
     # torch.cuda.empty_cache()
 
-    if (epoch+1) % 12 == 0:
+    if epoch % 12 == 0:
         with torch.no_grad():
             model.eval()
             print("evaluating...")
