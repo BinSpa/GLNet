@@ -51,7 +51,11 @@ class FocalLoss(nn.Module):
             valid = (target != self.ignore)
             input = input[valid]
             target = target[valid]
-
+        # debug
+        if not (target.min() >= 0 and target.max() < input.size(1)):
+            out_of_range_values = target[(target < 0) | (target >= input.size(1))].unique().tolist()
+            raise ValueError(f"Target values {out_of_range_values} are out of range [0, {input.size(1) - 1}].")
+        
         if self.one_hot: target = one_hot(target, input.size(1))
         probs = F.softmax(input, dim=1)
         probs = (probs * target).sum(1)
