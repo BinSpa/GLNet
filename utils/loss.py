@@ -47,6 +47,10 @@ class FocalLoss(nn.Module):
         B, C, H, W = input.size()
         input = input.permute(0, 2, 3, 1).contiguous().view(-1, C)  # B * H * W, C = P, C
         target = target.view(-1)
+        # 保证target中没有负数
+        valid = (target >= 0)
+        input = input[valid]
+        target = target[valid]
         if self.ignore is not None:
             valid = (target != self.ignore)
             input = input[valid]
