@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 import numpy as np
 import torch
 import torch.nn as nn
