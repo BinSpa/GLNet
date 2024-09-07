@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=0
+# export CUDA_VISIBLE_DEVICES=0
 python /data1/gyl/RS_Code/GLNet/train_deep_globe.py \
 --n_class 6 \
 --dataset "gid" \
