@@ -1,6 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0
 python ../../train_deep_globe.py \
 --n_class 25 \
+--dataset "fbp" \
 --data_path "/data1/gyl/RS_DATASET/FBP" \
 --model_path "../../saved_models/fbp" \
 --log_path "../../runs/fbp" \
