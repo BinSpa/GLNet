@@ -191,7 +191,7 @@ for epoch in range(num_epochs):
             # torch.cuda.empty_cache()
 
             # if not (test or evaluation): torch.save(model.state_dict(), "./saved_models/" + task_name + ".epoch" + str(epoch) + ".pth")
-            if not (test or evaluation): torch.save(model.state_dict(), "../../saved_models/" + task_name + str(epoch) + ".pth")
+            if not (test or evaluation): torch.save(model.state_dict(), "../../saved_models/gid" + task_name + str(epoch) + ".pth")
 
             if test: break
             else:
