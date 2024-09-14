@@ -19,15 +19,21 @@ def one_hot(index, classes):
     #####################################################
     # index is flatten (during ignore) ##################
     size = index.size()[:1] + (classes,)
-    view = index.size()[:1] + (1,)
+    # view = index.size()[:1] + (1,)
     #####################################################
 
     # mask = torch.Tensor(size).fill_(0).to(device)
     mask = torch.Tensor(size).fill_(0).cuda()
-    index = index.view(view)
+    # index = index.view(view)
+    index = index.view(-1)
     ones = 1.
+    # 过滤异常值
+    valid_indices = (index >= 0) & (index < classes)
+    # 使用scatter_操作在正确的位置放置1
+    mask[valid_indices, index[valid_indices]] = ones
 
-    return mask.scatter_(1, index, ones)
+    return mask
+    # return mask.scatter_(1, index, ones)
 
 
 class FocalLoss(nn.Module):
@@ -47,19 +53,13 @@ class FocalLoss(nn.Module):
         B, C, H, W = input.size()
         input = input.permute(0, 2, 3, 1).contiguous().view(-1, C)  # B * H * W, C = P, C
         target = target.view(-1)
-        # 保证target中没有负数
-        valid = (target >= 0)
-        input = input[valid]
-        target = target[valid]
-        if self.ignore is not None:
-            valid = (target != self.ignore)
-            input = input[valid]
-            target = target[valid]
+        # 把target中所有不合法的值全部转成0
+        target[(target < 0) | (target >= input.size(1))] = 255
         # debug
-        if not (target.min() >= 0 and target.max() < input.size(1)):
-            out_of_range_values = target[(target < 0) | (target >= input.size(1))].unique().tolist()
-            raise ValueError(f"Target values {out_of_range_values} are out of range [0, {input.size(1) - 1}].")
-        
+        # if not (target.min() >= 0 and target.max() < input.size(1)):
+        #     out_of_range_values = target[(target < 0) | (target >= input.size(1))].unique().tolist()
+        #     raise ValueError(f"Target values {out_of_range_values} are out of range [0, {input.size(1) - 1}].")
+
         if self.one_hot: target = one_hot(target, input.size(1))
         probs = F.softmax(input, dim=1)
         probs = (probs * target).sum(1)

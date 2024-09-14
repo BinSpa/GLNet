@@ -41,7 +41,7 @@ class URUR(data.Dataset):
         if self.label:
             # label = scipy.io.loadmat(join(self.root, 'Notification/' + self.ids[index].replace('_sat.jpg', '_mask.mat')))["label"]
             # label = Image.fromarray(label)
-            label = Image.open(os.path.join(self.root, 'label/' + self.ids[index]))
+            label = Image.open(os.path.join(self.root, 'label/' + self.ids[index])).convert('L')
             sample['label'] = label
         if self.transform and self.label:
             image, label = self._transform(image, label)
