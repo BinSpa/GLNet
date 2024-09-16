@@ -7,7 +7,7 @@ python ../../train_deep_globe.py \
 --task_name "fpn_gid_global2local" \
 --mode 2 \
 --batch_size 6 \
---sub_batch_size 6 \
+--sub_batch_size 32 \
 --size_g 508 \
 --size_p 508 \
 --path_g "fpn_gid_global120.pth" \
