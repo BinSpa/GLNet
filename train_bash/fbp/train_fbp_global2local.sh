@@ -6,8 +6,8 @@ python ../../train_deep_globe.py \
 --log_path "../../runs/fbp" \
 --task_name "fpn_fbp_global2local" \
 --mode 2 \
---batch_size 6 \
---sub_batch_size 32 \
+--batch_size 4 \
+--sub_batch_size 28 \
 --size_g 508 \
 --size_p 508 \
 --path_g "fpn_fbp_global120.pth" \

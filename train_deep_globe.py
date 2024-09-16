@@ -78,9 +78,9 @@ elif dataset == "fbp":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     dataset_train = FBP(os.path.join(data_path, "train"), ids_train, label=True, transform=True)
-    dataloader_train = torch.utils.data.DataLoader(dataset=dataset_train, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=True, pin_memory=True)
+    dataloader_train = torch.utils.data.DataLoader(dataset=dataset_train, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=True, pin_memory=True, persistent_workers=True)
     dataset_val = FBP(os.path.join(data_path, "val"), ids_val, label=True)
-    dataloader_val = torch.utils.data.DataLoader(dataset=dataset_val, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=False, pin_memory=True)
+    dataloader_val = torch.utils.data.DataLoader(dataset=dataset_val, batch_size=batch_size, num_workers=10, collate_fn=collate, shuffle=False, pin_memory=True, persistent_workers=True)
     dataset_test = FBP(os.path.join(data_path, "val"), ids_test, label=True)
     dataloader_test = torch.utils.data.DataLoader(dataset=dataset_test, batch_size=batch_size, num_workers=10, collate_fn=collate_test, shuffle=False, pin_memory=True)
 elif dataset == "urur":
@@ -191,7 +191,7 @@ for epoch in range(num_epochs):
             # torch.cuda.empty_cache()
 
             # if not (test or evaluation): torch.save(model.state_dict(), "./saved_models/" + task_name + ".epoch" + str(epoch) + ".pth")
-            if not (test or evaluation): torch.save(model.state_dict(), "../../saved_models/gid" + task_name + str(epoch) + ".pth")
+            if not (test or evaluation): torch.save(model.state_dict(), "../../saved_models/fbp" + task_name + str(epoch) + ".pth")
 
             if test: break
             else:
