@@ -10,4 +10,4 @@ python ../../train_deep_globe.py \
 --sub_batch_size 32 \
 --size_g 508 \
 --size_p 508 \
---path_g "fpn_gid_global120.pth" \
+--path_g "gidfpn_gid_global120.pth" \
