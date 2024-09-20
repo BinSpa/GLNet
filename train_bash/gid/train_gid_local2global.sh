@@ -1,4 +1,4 @@
-python train_deep_globe.py \
+python ../../train_deep_globe.py \
 --n_class 6 \
 --dataset "gid" \
 --data_path "/data1/gyl/RS_DATASET/FBP" \
