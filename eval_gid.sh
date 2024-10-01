@@ -2,8 +2,8 @@ python train_deep_globe.py \
 --n_class 6 \
 --dataset "gid" \
 --data_path "/data1/gyl/RS_DATASET/FBP" \
---model_path "../../saved_models/gid" \
---log_path "../../runs/gid" \
+--model_path "./saved_models/gid" \
+--log_path "./runs/gid" \
 --task_name "eval" \
 --mode 3 \
 --batch_size 6 \
