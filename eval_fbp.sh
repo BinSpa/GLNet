@@ -1,0 +1,16 @@
+python train_deep_globe.py \
+--n_class 25 \
+--dataset "fbp" \
+--data_path "/data1/gyl/RS_DATASET/FBP" \
+--model_path "./saved_models/fbp" \
+--log_path "./runs/fbp" \
+--task_name "eval" \
+--mode 3 \
+--batch_size 6 \
+--sub_batch_size 32 \
+--size_g 508 \
+--size_p 508 \
+--path_g "fpn_fbp_global120.pth" \
+--path_g2l "fbpfpn_fbp_global2local24.pth" \
+--path_l2g "fbpfpn_fbp_local2global9.pth" \
+--evaluation
